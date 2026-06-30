@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Los Roscas 🎴</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap');
+  :root {
+    --gold: #FFFFFF; --bg: #2C0A14; --card-bg: #3d1020;
+    --text: #f0f0f0; --muted: #c89aa8; --red: #7B0828; --green: #27AE60;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; }
+  header { text-align: center; padding: 30px 20px 16px; background: linear-gradient(180deg, #1a0509 0%, #2C0A14 100%); border-bottom: 2px solid rgba(255,255,255,0.3); }
+  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 9vw, 56px); letter-spacing: 4px; color: #fff; }
+  header p { color: var(--muted); font-size: 12px; margin-top: 6px; letter-spacing: 1px; }
+  .back-link { display: inline-block; margin-top: 12px; color: #fff; font-size: 12px; text-decoration: none; border: 1px solid rgba(255,255,255,0.4); padding: 6px 16px; border-radius: 6px; letter-spacing: 1px; }
+  .back-link:hover { background: rgba(255,255,255,0.1); }
+
+  .container { max-width: 600px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  .grid-select { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 16px; }
+  .pick-btn {
+    aspect-ratio: 1; border-radius: 10px; border: 2px solid #333;
+    background: #3d1020; color: #fff; font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; position: relative; text-align: center; padding: 4px;
+  }
+  .pick-btn:hover { border-color: #fff; transform: translateY(-2px); }
+  .pick-btn.locked { opacity: 0.35; cursor: not-allowed; border-color: #5a1a2a; }
+  .pick-btn.locked:hover { transform: none; border-color: #5a1a2a; }
+  .pick-btn.done { border-color: #27AE60; background: #1a3322; }
+  .pick-btn .lock-icon { position: absolute; top: 4px; right: 4px; font-size: 11px; }
+
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 3px; color: var(--muted); margin-top: 24px; margin-bottom: 4px; }
+
+  .quiz-box {
+    background: var(--card-bg); border: 1px solid rgba(255,255,255,0.2); border-radius: 14px;
+    padding: 24px; margin-top: 20px; display: none;
+  }
+  .quiz-box.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .quiz-title { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 2px; color: var(--muted); margin-bottom: 6px; }
+  .quiz-question { font-size: 17px; font-weight: 600; margin-bottom: 18px; line-height: 1.4; }
+  .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+  .quiz-opt {
+    background: #1a0509; border: 1px solid #5a1a2a; color: #fff; border-radius: 8px;
+    padding: 12px 16px; font-size: 15px; text-align: left; cursor: pointer; transition: all 0.15s;
+  }
+  .quiz-opt:hover { border-color: #fff; background: #260712; }
+  .quiz-opt.correct { background: #1a3322; border-color: #27AE60; }
+  .quiz-opt.wrong { background: #3d0d12; border-color: #7B0828; }
+
+  .result-box { margin-top: 18px; text-align: center; display: none; }
+  .result-box.show { display: block; animation: fadeIn 0.3s ease; }
+  .result-success { color: #4ade80; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; margin-bottom: 8px; }
+  .result-code { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: #fff; background: #1a0509; padding: 10px 20px; border-radius: 8px; display: inline-block; border: 1px solid #4ade80; }
+  .result-fail { color: #f87171; font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 1px; margin-bottom: 6px; }
+  .result-fail-sub { color: var(--muted); font-size: 13px; }
+  .go-album { display: block; margin: 16px auto 0; text-align: center; color: var(--muted); font-size: 12px; text-decoration: underline; cursor: pointer; }
+
+  .msg-top { text-align: center; font-size: 13px; color: var(--muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>TEST LOS ROSCAS</h1>
+  <p>Adivina y desbloquea tu cromo</p>
+  <a class="back-link" href="index.html">← VOLVER AL ÁLBUM</a>
+</header>
+
+<div class="container">
+  <div class="section-title">ELIGE QUÉ CROMO QUIERES INTENTAR DESBLOQUEAR</div>
+  <p class="msg-top">Si fallas la pregunta, ese cromo se bloquea 7 días</p>
+  <div class="grid-select" id="grid"></div>
+
+  <div class="quiz-box" id="quizBox">
+    <div class="quiz-title" id="quizTitle"></div>
+    <div class="quiz-question" id="quizQuestion"></div>
+    <div class="quiz-options" id="quizOptions"></div>
+    <div class="result-box" id="resultBox"></div>
+  </div>
+</div>
+
+<script>
+// Mismo array que el álbum principal, solo nombre + código
+const ROSCAS = [
+  { nombre:"Hugo",        codigo:"HUGO-7550" },
+  { nombre:"Lucas",       codigo:"LUCAS-1309" },
+  { nombre:"Alejandro",   codigo:"ALEJO-3541" },
+  { nombre:"Cosme",       codigo:"COSME-9101" },
+  { nombre:"Niko",        codigo:"NIKO-1301" },
+  { nombre:"Rubén",       codigo:"RUBEN-5305" },
+  { nombre:"Julen",       codigo:"JULEN-5937" },
+  { nombre:"Cristian",    codigo:"CRIS-8521" },
+  { nombre:"Raúl",        codigo:"RAUL-5999" },
+  { nombre:"Gonzalo",     codigo:"GONZA-4659" },
+  { nombre:"Álvaro Jefe", codigo:"JEFE-7073" },
+  { nombre:"Lukinas",     codigo:"LUKINAS-588" },
+  { nombre:"Markisio",    codigo:"MARKISIO-2664" },
+  { nombre:"Nomete",      codigo:"NOMETE-1044" },
+  { nombre:"Samuel",      codigo:"SAMUEL-8686" },
+  { nombre:"Aaron",       codigo:"AARON-931" },
+  { nombre:"Alcoro",      codigo:"ALCORO-5944" },
+  { nombre:"Gabriel",     codigo:"GABRIEL-6777" },
+  { nombre:"Jacinto",     codigo:"JACINTO-4951" },
+  { nombre:"Miguel",      codigo:"MIGUEL-4244" },
+  { nombre:"Oihan",       codigo:"OIHAN-152" },
+  { nombre:"Fernando",    codigo:"FER-7006" },
+  { nombre:"Akimon",      codigo:"AKIMON-1336" },
+  { nombre:"Iván",        codigo:"IVAN-868" },
+  { nombre:"Bombilla",    codigo:"BOMBILLA-68" },
+  { nombre:"Chilín",      codigo:"CHILIN-6473" },
+  { nombre:"Jan",         codigo:"JAN-9236" },
+  { nombre:"Jaime",       codigo:"JAIME-5693" },
+  { nombre:"Nico",        codigo:"NICO-9114" },
+];
+
+// Preguntas: la respuesta correcta SIEMPRE es el propio Rosca de la pregunta
+const PREGUNTAS = {
+  "Lucas":       { q: "¿Quién es la persona que bebe más en una noche?", opciones: ["Raúl","Lucas","Gabriel","Iván"] },
+  "Rubén":       { q: "¿Quién tiene más obsesión con el gimnasio?", opciones: ["Rubén","Akimon","Nomete","Álvaro Jefe"] },
+  "Alcoro":      { q: "¿Quién lleva croquetas siempre a una cena?", opciones: ["Chilín","Lukinas","Oihan","Alcoro"] },
+  "Cristian":    { q: "¿Quién va menos al pueblo?", opciones: ["Niko","Julen","Jan","Cosme"] },
+  "Lukinas":     { q: "¿Quién es el más pesado de los Roscas?", opciones: ["Lukinas","Samuel","Alejandro","Gonzalo"] },
+  "Jacinto":     { q: "¿A quién le gustan más las cachimbas?", opciones: ["Akimon","Jacinto","Aaron","Niko"] },
+  "Aaron":       { q: "¿Quién es el más feo de los Roscas?", opciones: ["Aaron","Cristian","Fernando","Cosme"] },
+  "Alejandro":   { q: "¿Quién siempre llega tarde?", opciones: ["Alejandro","Lukinas","Gonzalo","Iván"] },
+  "Hugo":        { q: "¿A quién le gusta recoger aceitunas?", opciones: ["Hugo","Fernando","Gabriel","Miguel"] },
+  "Miguel":      { q: "¿Quién ha trabajado en una gasolinera?", opciones: ["Jan","Aaron","Miguel","Fernando"] },
+  "Cosme":       { q: "¿Quién limpia tuberías?", opciones: ["Nomete","Iván","Cristian","Cosme"] },
+  "Niko":        { q: "¿Quién fuma más?", opciones: ["Miguel","Niko","Raúl","Aaron"] },
+  "Julen":       { q: "¿Quién vive en Barcelona?", opciones: ["Julen","Rubén","Alejandro","Álvaro Jefe"] },
+  "Raúl":        { q: "¿Quién está en los Roscas pero no lo vemos en todo el año?", opciones: ["Chilín","Lucas","Raúl","Samuel"] },
+  "Markisio":    { q: "¿Quién tiene novia siempre?", opciones: ["Aaron","Markisio","Lukinas","Nomete"] },
+  "Nomete":      { q: "¿Quién hace más dominadas?", opciones: ["Iván","Nomete","Jan","Lukinas"] },
+  "Gabriel":     { q: "¿Quién hace las mejores magdalenas?", opciones: ["Alcoro","Nico","Akimon","Gabriel"] },
+  "Oihan":       { q: "¿Quién juega a fútbol en el antiguoko?", opciones: ["Niko","Cosme","Oihan","Gonzalo"] },
+  "Fernando":    { q: "¿A quién le gusta más la caza?", opciones: ["Gabriel","Jacinto","Raúl","Fernando"] },
+  "Akimon":      { q: "¿Quién tiene una moto?", opciones: ["Akimon","Iván","Jan","Álvaro"] },
+  "Bombilla":    { q: "¿Quién es socorrista de la piscina?", opciones: ["Raúl","Iván","Lucas","Alcoro"] },
+  "Chilín":      { q: "¿A quién le dan más miedo las mujeres?", opciones: ["Alcoro","Nico","Chilín","Hugo"] },
+  "Jan":         { q: "¿Quién gana siempre el torneo de pádel?", opciones: ["Lukinas","Cosme","Jan","Lucas"] },
+  "Jaime":       { q: "¿A quién le gusta pescar?", opciones: ["Fernando","Nico","Jacinto","Jaime"] },
+  "Nico":        { q: "¿De quién es siempre la culpa?", opciones: ["Iván","Nico","Gabriel","Hugo"] },
+  "Samuel":      { q: "¿Quién creó los Roscas?", opciones: ["Iván","Hugo","Lucas","Samuel"] },
+  "Gonzalo":     { q: "¿Quién lleva más tiempo recortando el pelo?", opciones: ["Alejandro","Akimon","Gonzalo","Julen"] },
+  "Álvaro Jefe": { q: "¿Quién lleva siempre el altavoz?", opciones: ["Iván","Rubén","Álvaro Jefe","Chilín"] },
+  "Iván":        { q: "¿Quién se encarga de organizar todo?", opciones: ["Lucas","Hugo","Samuel","Iván"] },
+};
+
+// Mezclar opciones de forma determinista por nombre (para que no cambien cada vez)
+function shuffleSeeded(arr, seed) {
+  const a = [...arr];
+  let s = seed;
+  for (let i = a.length - 1; i > 0; i--) {
+    s = (s * 9301 + 49297) % 233280;
+    const j = Math.floor((s / 233280) * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function seedFromString(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) % 100000;
+  return h;
+}
+
+const STORAGE_DONE = 'roscas_test_done_v1';     // codigos ya conseguidos vía test
+const STORAGE_LOCK = 'roscas_test_locked_v1';   // {nombre: timestamp_desbloqueo}
+
+let done = JSON.parse(localStorage.getItem(STORAGE_DONE) || '[]');
+let locks = JSON.parse(localStorage.getItem(STORAGE_LOCK) || '{}');
+
+function saveState() {
+  localStorage.setItem(STORAGE_DONE, JSON.stringify(done));
+  localStorage.setItem(STORAGE_LOCK, JSON.stringify(locks));
+}
+
+function isLocked(nombre) {
+  if (!locks[nombre]) return false;
+  return Date.now() < locks[nombre];
+}
+
+function daysLeft(nombre) {
+  const ms = locks[nombre] - Date.now();
+  return Math.max(1, Math.ceil(ms / (1000*60*60*24)));
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  ROSCAS.forEach(r => {
+    const btn = document.createElement('button');
+    const locked = isLocked(r.nombre);
+    const isDone = done.includes(r.nombre);
+    btn.className = 'pick-btn' + (locked ? ' locked' : '') + (isDone ? ' done' : '');
+    btn.innerHTML = `${r.nombre}${locked ? `<span class="lock-icon">🔒</span>` : ''}${isDone ? `<span class="lock-icon">✓</span>` : ''}`;
+    if (!locked) {
+      btn.onclick = () => startQuiz(r.nombre);
+    }
+    grid.appendChild(btn);
+  });
+}
+
+function startQuiz(nombre) {
+  const data = PREGUNTAS[nombre];
+  if (!data) return;
+
+  const box = document.getElementById('quizBox');
+  const title = document.getElementById('quizTitle');
+  const question = document.getElementById('quizQuestion');
+  const optionsEl = document.getElementById('quizOptions');
+  const resultEl = document.getElementById('resultBox');
+
+  title.textContent = `CROMO: ${nombre.toUpperCase()}`;
+  question.textContent = data.q;
+  optionsEl.innerHTML = '';
+  resultEl.className = 'result-box';
+  resultEl.innerHTML = '';
+
+  const seed = seedFromString(nombre);
+  const shuffled = shuffleSeeded(data.opciones, seed);
+
+  shuffled.forEach(opt => {
+    const optBtn = document.createElement('button');
+    optBtn.className = 'quiz-opt';
+    optBtn.textContent = opt;
+    optBtn.onclick = () => answerQuiz(nombre, opt, optBtn, optionsEl);
+    optionsEl.appendChild(optBtn);
+  });
+
+  box.classList.add('active');
+  box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function answerQuiz(nombre, chosen, btnEl, optionsContainer) {
+  // desactivar todos los botones
+  const allBtns = optionsContainer.querySelectorAll('.quiz-opt');
+  allBtns.forEach(b => b.onclick = null);
+
+  const correct = chosen === nombre;
+
+  if (correct) {
+    btnEl.classList.add('correct');
+  } else {
+    btnEl.classList.add('wrong');
+    allBtns.forEach(b => { if (b.textContent === nombre) b.classList.add('correct'); });
+  }
+
+  const resultEl = document.getElementById('resultBox');
+  const rosca = ROSCAS.find(r => r.nombre === nombre);
+
+  if (correct) {
+    done.push(nombre);
+    saveState();
+    resultEl.innerHTML = `
+      <div class="result-success">✓ ¡CORRECTO!</div>
+      <div class="result-code">${rosca.codigo}</div>
+      <div class="go-album" onclick="window.location.href='index.html'">Ir al álbum a introducirlo →</div>
+    `;
+  } else {
+    const unlockTime = Date.now() + 7 * 24 * 60 * 60 * 1000;
+    locks[nombre] = unlockTime;
+    saveState();
+    resultEl.innerHTML = `
+      <div class="result-fail">✗ Has fallado</div>
+      <div class="result-fail-sub">No podrás intentarlo de nuevo hasta dentro de 7 días</div>
+    `;
+  }
+
+  resultEl.classList.add('show');
+  setTimeout(() => renderGrid(), 300);
+}
+
+renderGrid();
+</script>
+</body>
+</html>
