@@ -192,12 +192,12 @@ function daysLeft(nombre) {
 function renderGrid() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
-  ROSCAS.forEach(r => {
+  ROSCAS.forEach((r, i) => {
     const btn = document.createElement('button');
     const locked = isLocked(r.nombre);
     const isDone = done.includes(r.nombre);
     btn.className = 'pick-btn' + (locked ? ' locked' : '') + (isDone ? ' done' : '');
-    btn.innerHTML = `${r.nombre}${locked ? `<span class="lock-icon">🔒</span>` : ''}${isDone ? `<span class="lock-icon">✓</span>` : ''}`;
+    btn.innerHTML = `#${String(i+1).padStart(2,'0')}${locked ? `<span class="lock-icon">🔒</span>` : ''}${isDone ? `<span class="lock-icon">✓</span>` : ''}`;
     if (!locked) {
       btn.onclick = () => startQuiz(r.nombre);
     }
