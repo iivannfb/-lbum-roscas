@@ -276,6 +276,24 @@ function answerQuiz(nombre, chosen, btnEl, optionsContainer) {
   setTimeout(() => renderGrid(), 300);
 }
 
+// Reset oculto: pulsar el título 10 veces resetea #08 y #25
+let secretClicks = 0;
+let secretTimer = null;
+document.querySelector('header h1').addEventListener('click', () => {
+  secretClicks++;
+  clearTimeout(secretTimer);
+  secretTimer = setTimeout(() => { secretClicks = 0; }, 4000);
+  if (secretClicks >= 10) {
+    secretClicks = 0;
+    done = done.filter(n => n !== 'Cristian' && n !== 'Bombilla');
+    delete locks['Cristian'];
+    delete locks['Bombilla'];
+    saveState();
+    renderGrid();
+    alert('✓ Cromos #08 y #25 reseteados');
+  }
+});
+
 renderGrid();
 </script>
 </body>
