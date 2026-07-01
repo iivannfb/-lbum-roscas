@@ -215,7 +215,8 @@ function startQuiz(nombre) {
   const optionsEl = document.getElementById('quizOptions');
   const resultEl = document.getElementById('resultBox');
 
-  title.textContent = `CROMO: ${nombre.toUpperCase()}`;
+  const idx = ROSCAS.findIndex(r => r.nombre === nombre) + 1;
+  title.textContent = `CROMO #${String(idx).padStart(2,'0')}`;
   question.textContent = data.q;
   optionsEl.innerHTML = '';
   resultEl.className = 'result-box';
