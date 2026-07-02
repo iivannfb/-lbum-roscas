@@ -263,12 +263,12 @@ function answerQuiz(nombre, chosen, btnEl, optionsContainer) {
       <div class="go-album" onclick="window.location.href='index.html'">Ir al álbum a introducirlo →</div>
     `;
   } else {
-    const unlockTime = Date.now() + 7 * 24 * 60 * 60 * 1000;
+    const unlockTime = Date.now() + 1 * 24 * 60 * 60 * 1000;
     locks[nombre] = unlockTime;
     saveState();
     resultEl.innerHTML = `
       <div class="result-fail">✗ Has fallado</div>
-      <div class="result-fail-sub">No podrás intentarlo de nuevo hasta dentro de 7 días</div>
+      <div class="result-fail-sub">No podrás intentarlo de nuevo hasta dentro de 24 horas</div>
     `;
   }
 
