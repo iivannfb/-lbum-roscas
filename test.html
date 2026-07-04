@@ -73,7 +73,7 @@
 
 <div class="container">
   <div class="section-title">ELIGE QUÉ CROMO QUIERES INTENTAR DESBLOQUEAR</div>
-  <p class="msg-top">Si fallas la pregunta, ese cromo se bloquea 24 horas</p>
+  <p class="msg-top" id="msg24h" style="cursor:default;">Si fallas la pregunta, ese cromo se bloquea 24 horas</p>
   <div class="grid-select" id="grid"></div>
 
   <div class="quiz-box" id="quizBox">
@@ -116,6 +116,7 @@ const ROSCAS = [
   { nombre:"Jan",         codigo:"JAN-9236" },
   { nombre:"Jaime",       codigo:"JAIME-5693" },
   { nombre:"Nico",        codigo:"NICO-9114" },
+  { nombre:"Ismael",      codigo:"ISMAEL-3047" },
 ];
 
 // Preguntas: la respuesta correcta SIEMPRE es el propio Rosca de la pregunta
@@ -149,6 +150,7 @@ const PREGUNTAS = {
   "Gonzalo":     { q: "¿Quién lleva más tiempo recortando el pelo?", opciones: ["Alejandro","Akimon","Gonzalo","Julen"] },
   "Álvaro Jefe": { q: "¿Quién lleva siempre el altavoz?", opciones: ["Iván","Rubén","Álvaro Jefe","Chilín"] },
   "Iván":        { q: "¿Quién se encarga de organizar todo?", opciones: ["Lucas","Hugo","Samuel","Iván"] },
+  "Ismael":      { q: "¿Quién se duerme siempre en el coche al volver de fiesta?", opciones: ["Niko","Julen","Cosme","Ismael"] },
 };
 
 // Mezclar opciones de forma determinista por nombre (para que no cambien cada vez)
@@ -276,21 +278,19 @@ function answerQuiz(nombre, chosen, btnEl, optionsContainer) {
   setTimeout(() => renderGrid(), 300);
 }
 
-// Reset oculto: pulsar el título 10 veces resetea #08 y #25
+// Reset oculto: pulsar el texto "24 horas" 10 veces borra todos los bloqueos
 let secretClicks = 0;
 let secretTimer = null;
-document.querySelector('header h1').addEventListener('click', () => {
+document.getElementById('msg24h').addEventListener('click', () => {
   secretClicks++;
   clearTimeout(secretTimer);
   secretTimer = setTimeout(() => { secretClicks = 0; }, 4000);
   if (secretClicks >= 10) {
     secretClicks = 0;
-    done = done.filter(n => n !== 'Cristian' && n !== 'Bombilla');
-    delete locks['Cristian'];
-    delete locks['Bombilla'];
+    locks = {};
     saveState();
     renderGrid();
-    alert('✓ Cromos #08 y #25 reseteados');
+    alert('✓ Bloqueos eliminados');
   }
 });
 
