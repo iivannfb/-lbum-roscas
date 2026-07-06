@@ -262,9 +262,12 @@ function answerQuiz(nombre, chosen, btnEl, optionsContainer) {
     // Desbloquear el cromo directamente en el localStorage del álbum
     const ALBUM_KEY = 'roscas_unlocked_v1';
     let albumUnlocked = JSON.parse(localStorage.getItem(ALBUM_KEY) || '[]');
+    // Convertir todos a número para comparación segura
+    albumUnlocked = albumUnlocked.map(Number);
     const roscaIdx = ROSCAS.findIndex(r => r.nombre === nombre);
-    if (roscaIdx >= 0 && !albumUnlocked.includes(roscaIdx + 1)) {
-      albumUnlocked.push(roscaIdx + 1);
+    const roscaId = roscaIdx + 1;
+    if (roscaIdx >= 0 && !albumUnlocked.includes(roscaId)) {
+      albumUnlocked.push(roscaId);
       localStorage.setItem(ALBUM_KEY, JSON.stringify(albumUnlocked));
     }
     resultEl.innerHTML = `
